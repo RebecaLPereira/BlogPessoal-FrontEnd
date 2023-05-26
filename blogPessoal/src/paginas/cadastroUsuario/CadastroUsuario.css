@@ -1,0 +1,9 @@
+.imgCadastro {
+    background-image: url("/src/img/photohome.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 100vh;
+    min-height: 100vh;
+  }
+  

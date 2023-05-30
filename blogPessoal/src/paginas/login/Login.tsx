@@ -1,58 +1,92 @@
-import './Login.css'
+import React, { ChangeEvent, useState, useEffect } from "react";
+import "./Login.css";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
-
+import UserLogin from "../../models/UserLogin";
+import useLocalStorage from "react-use-localstorage";
+import { login } from "../../service/Service";
 
 function Login() {
-    return(
-        <> 
-        <Grid 
-        container alignItems="center" 
-        className="imgLogin">
+  let history = useNavigate();
+  const [token, setToken] = useLocalStorage("token");
+  const [userLogin, setUserLogin] = useState<UserLogin>({
+    id: 0,
+    usuario: "",
+    senha: "",
+    token: "",
+  });
+
+  function updatedModel(e: ChangeEvent<HTMLInputElement>) {
+    setUserLogin({
+      ...userLogin,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  useEffect(() => {
+    if (token != "") {
+      history("/home");
+    }
+  }, [token]);
+
+  async function onSubmit(e: ChangeEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      await login("/usuarios/logar", userLogin, setToken);
+
+      alert("Usuário logado com sucesso!");
+    } catch (error) {
+      alert("Dados do usuário inconsistentes. Error ao logar!");
+    }
+  }
+
+  return (
+    <>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
         <Grid item xs={6}>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            justifyContent={"center"}
-            paddingX={20}
-
-          >
-            <form>
-              <Box>
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  color="textPrimary"
-                  component={"h3"}
-                  align="center"
-                  className="textos1"
-
-
-                >
-                  Entrar
-                </Typography>
-                <TextField
-                  label="Nome de Usuario"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                />
-                <TextField
-                  label="Senha"
-                  type="password"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-
-                />
-                <Box marginTop={2} textAlign="center">
-                  <Link to={"/home"} className="text-decorator-none">
-                    <Button type="submit" variant="contained" color="primary">
-                      Logar
-                    </Button>
-                  </Link>
-                </Box>
+          <Box paddingX={10}>
+            <form onSubmit={onSubmit}>
+              <Typography
+                variant="h3"
+                gutterBottom
+                color="textPrimary"
+                component="h3"
+                align="center"
+                className="textos1"
+              >
+                Entrar
+              </Typography>
+              <TextField
+                value={userLogin.usuario}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => updatedModel(e)}
+                id="usuario"
+                label="usuário"
+                variant="outlined"
+                name="usuario"
+                margin="normal"
+                fullWidth
+              />
+              <TextField
+                value={userLogin.senha}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => updatedModel(e)}
+                id="senha"
+                label="senha"
+                variant="outlined"
+                name="senha"
+                margin="normal"
+                type="password"
+                fullWidth
+              />
+              <Box marginTop={2} textAlign="center">
+                <Button type="submit" variant="contained" color="primary">
+                  Logar
+                </Button>
               </Box>
             </form>
             <Box display="flex" justifyContent="center" marginTop={2}>
@@ -61,7 +95,7 @@ function Login() {
                   Não tem uma conta?
                 </Typography>
               </Box>
-              <Link to={"/cadastrar"}>
+              <Link to="/cadastrar">
                 <Typography
                   variant="subtitle1"
                   gutterBottom
@@ -74,10 +108,10 @@ function Login() {
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={6}  className="imagemLogin"></Grid>
+        <Grid item xs={6} className="imagemLogin"></Grid>
       </Grid>
-        </>
-    )
+    </>
+  );
 }
 
 export default Login;

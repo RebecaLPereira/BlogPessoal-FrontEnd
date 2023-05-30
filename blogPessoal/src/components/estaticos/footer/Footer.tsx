@@ -14,7 +14,7 @@ function Footer (){
           alignItems="center"
           style={{ background: "#524A4E" }}
         >
-          <Grid alignItems="center" item xs={12}>
+          <Grid  item xs={12}>
             <Box className="box1">
               <Box
                 paddingTop={1}

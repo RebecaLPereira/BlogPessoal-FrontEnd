@@ -1,90 +1,86 @@
-import { Button, Grid, Link, TextField, Typography } from '@material-ui/core';
-import './CadastroUsuario.css'
-import { Box } from '@mui/material';
-
+import React, { useState, useEffect, ChangeEvent} from "react";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
+import "./CadastroUsuario.css";
+import { Box } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import User from "../../models/User";
+import { cadastroUsuario } from "../../service/Service";
 
 function CadastroUsuario() {
-    return(
-    <Grid 
-    container direction='row' 
-    justifyContent='center' 
-    alignItems='center'
-    className='imgCadastro'
-    >
-    
-    <Box paddingX={10}>
-    <form>
-        <Typography 
-                variant='h4' 
-                gutterBottom 
-                color='textPrimary' 
-                component={"h3"} 
-                align='center'
+  let navigate = useNavigate();
+  const [confirmarSenha, setConfirmarSenha] = useState<String>("");
+  const [user, setUser] = useState<User>({
+    id: 0,
+    nome: "",
+    usuario: "",
+    senha: "",
+  })
+
+  const [userResult, setUserResult] = useState<User>({
+    id: 0,
+    nome: "",
+    usuario: "",
+    senha: "",
+  })
+
+  useEffect(() => {
+    if (userResult.id != 0) {
+      navigate("/login")
+    }
+  }, [userResult])
+
+  function confirmarSenhaHandle(e: ChangeEvent<HTMLInputElement>) {
+    setConfirmarSenha(e.target.value);
+  }
+
+  function updatedModel(e: ChangeEvent<HTMLInputElement>) {
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
+  }
+  async function onSubmit(e: ChangeEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (confirmarSenha == user.senha) {
+      cadastroUsuario(`/usuarios/cadastrar`, user, setUserResult);
+    } else {
+      alert(
+        "Dados inconsistentes. Favor verificar as informações de cadastro."
+      );
+    }
+  }
+  return (
+    <Grid container direction="row" justifyContent="center" alignItems="center">
+      <Grid item xs={6} className="imgCadastro"></Grid>
+      <Grid item xs={6}>
+        <Box paddingX={10}>
+          <form onSubmit={onSubmit}>
+            
+          <Typography variant='h3' gutterBottom color='textPrimary' component="h3" align='center' className='textos2'>Cadastrar</Typography>
+                        <TextField value={user.nome} onChange={(e: ChangeEvent<HTMLInputElement>)=> updatedModel(e)} id='nome' label="nome" variant='outlined' name='nome' margin='normal' fullWidth />
+                        <TextField value={user.usuario} onChange={(e: ChangeEvent<HTMLInputElement>)=> updatedModel(e)} id='usuario' label="usuario" variant='outlined' name='usuario' margin='normal' fullWidth />
+                        <TextField value={user.senha} onChange={(e: ChangeEvent<HTMLInputElement>)=> updatedModel(e)} id ='senha' label="senha" variant='outlined' name='senha' margin='normal' type='password' fullWidth />
+                        <TextField value={confirmarSenha} onChange={(e: ChangeEvent<HTMLInputElement>)=> confirmarSenhaHandle(e)} id='confirmarSenha' label="confirmarSenha" variant='outlined' name='confirmarSenha' margin='normal' type='password' fullWidth />
+
+            <Box marginTop={2} textAlign="center">
+              <Link to={"/login"} className="text-decoration-none">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className="btnCancelar"
                 >
-                    Cadastrar
-                </Typography>
-                <TextField 
-                name='none'
-                label='Nome completo' 
-                variant='outlined'  
-                margin='normal' 
-                fullWidth 
-                
-                />
-                <TextField 
-                name='usuario'  
-                label='Endereço de e-mail' 
-                variant='outlined' 
-                margin='normal'
-                fullWidth 
-                
-                />
-                <TextField 
-                name='senha' 
-                label='senha' 
-                variant='outlined' 
-                type='password'
-                margin='normal' 
-                fullWidth 
-                />
-
-                <TextField 
-                name='confirmarSenha' 
-                label='Confirmar Senha' 
-                type='password' 
-                variant='outlined' 
-                margin='normal'
-                fullWidth 
-                
-                />
-
-                <TextField
-                name='foto'
-                label='Foto de Perfil'
-                variant='outlined'
-                margin='normal'
-                fullWidth
-                />
-
-                <Box marginTop={2} textAlign='center'>
-                <Link to={'/login'} className="text-decoration-none">
-              <Button
-                variant="contained"
-                color="secondary"
-                className="btnCancelar"
-              >
-                Cancelar
+                  Cancelar
+                </Button>
+              </Link>
+              <Button type="submit" variant="contained" color="primary">
+                Cadastrar
               </Button>
-            </Link>
-                <Button type='submit' variant='contained' color='primary'>
-                            Cadastrar
-                    </Button>
-                </Box>
-            </form>
+            </Box>
+          </form>
         </Box>
+      </Grid>
     </Grid>
-
-    )
+  );
 }
 
 export default CadastroUsuario;

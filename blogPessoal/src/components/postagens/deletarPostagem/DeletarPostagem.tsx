@@ -1,8 +1,54 @@
 import { Box } from '@mui/material';
 import './DeletarPostagem.css'
 import { Button, Card, CardActions, CardContent, Typography } from '@material-ui/core';
+import { useNavigate, useParams } from 'react-router-dom';
+import useLocalStorage from 'react-use-localstorage';
+import { useEffect, useState } from 'react';
+import { buscaId, deleteId } from '../../../service/Service';
+import Postagem from '../../../models/Postagem';
 
 function DeletarPostagem() {
+
+  let navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const [token, setToken] = useLocalStorage("token");
+  const [post, setPosts] = useState<Postagem>();
+
+  useEffect(() => {
+    if (token == "") {
+      alert("Você precisa estar logado");
+      navigate("/login");
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if(id !== undefined){
+        findById(id)
+    }
+  },[id])
+
+  async function findById(id: string){
+    buscaId(`/postagens/${id}`, setPosts, {
+        headers: {
+            'Authorization': token
+        }
+    })
+  }
+
+  function sim() {
+    navigate('/posts')
+    deleteId(`/postagens/${id}`, {
+      headers: {
+        'Authorization': token
+      }
+    });
+    alert('Postagem deletado com sucesso');
+  }
+
+  function nao() {
+    navigate('/posts')
+  }
+
   return (
     <>
       <Box m={2}>
@@ -13,7 +59,7 @@ function DeletarPostagem() {
                 Deseja deletar a Postagem:
               </Typography>
               <Typography color="textSecondary">
-                Titulo Postagem
+                {post?.titulo}
               </Typography>
             </Box>
           </CardContent>
@@ -21,6 +67,7 @@ function DeletarPostagem() {
             <Box display="flex" justifyContent="start" ml={1.0} mb={2}>
               <Box mx={2}>
                 <Button
+                  onClick={sim}
                   variant="contained"
                   className="marginLeft"
                   size="large"
@@ -30,6 +77,7 @@ function DeletarPostagem() {
               </Box>
               <Box>
                 <Button
+                  onClick={nao}
                   variant="contained"
                   size="large"
                   color="secondary"

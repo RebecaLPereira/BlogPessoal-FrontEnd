@@ -3,19 +3,32 @@ import { Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import "./ListaPostagem.css";
 import Postagem from "../../../models/Postagem";
-import useLocalStorage from "react-use-localstorage";
 import { useEffect, useState } from "react";
 import { busca, post } from "../../../service/Service";
+import { TokenState } from "../../../store/tokens/tokensReducer";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function ListaPostagem() {
+  window.scrollTo(0,0);
   const [posts, setPosts] = useState<Postagem[]>([]);
-  const [token, setToken] = useLocalStorage("token");
   let navigate = useNavigate();
+  const token = useSelector<TokenState, TokenState["tokens"]>(
+    (state) => state.tokens
+  );
 
   useEffect(() => {
     if (token == "") {
-      alert("Você precisa estar logado");
-      navigate("/login");
+      toast.error("Você precisa estar logado", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "colored",
+        progress: undefined,
+      });      navigate("/login");
     }
   }, [token]);
 
@@ -64,7 +77,7 @@ function ListaPostagem() {
                   </Button>
                 </Box>
               </Link>
-              <Link to="" className="text-decorator-none">
+              <Link to={`/deletarPostagem/${post.id}`} className="text-decorator-none">
                 <Box mx={1}>
                   <Button variant="contained" size="small" color="secondary">
                     Deletar

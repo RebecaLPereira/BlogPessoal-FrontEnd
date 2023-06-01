@@ -4,17 +4,31 @@ import { Link, useNavigate } from "react-router-dom";
 import './ListaTema.css'
 import Tema from "../../../models/Tema";
 import { useState, useEffect } from "react";
-import useLocalStorage from "react-use-localstorage";
 import { busca } from "../../../service/Service";
+import { useSelector } from "react-redux";
+import { TokenState } from "../../../store/tokens/tokensReducer";
+import { toast } from "react-toastify";
 
 function ListaTema() {
+  window.scrollTo(0,0);
   const [temas, setTemas] = useState<Tema[]>([])
-  const [token, setToken] = useLocalStorage('token');
+  const token = useSelector<TokenState, TokenState["tokens"]>(
+    (state) => state.tokens
+  );
   let navigate = useNavigate();
 
   useEffect (()=>{
     if( token == ''){
-      alert("Você precisa estar logado")
+      toast.error("Você precisa estar logado", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "colored",
+        progress: undefined,
+      });
       navigate("/login")
     }
   }, [token])

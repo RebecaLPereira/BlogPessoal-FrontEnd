@@ -2,19 +2,32 @@ import { Button, Card, CardActions, CardContent, Typography } from "@material-ui
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useLocalStorage from "react-use-localstorage";
 import { buscaId, deleteId } from "../../../service/Service";
 import Tema from "../../../models/Tema";
+import { useSelector } from "react-redux";
+import { TokenState } from "../../../store/tokens/tokensReducer";
+import { toast } from "react-toastify";
 
 function DeletarTema() {
+  window.scrollTo(0,0);
   let navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [token, setToken] = useLocalStorage("token");
-  const [tema, setTema] = useState<Tema>();
+  const token = useSelector<TokenState, TokenState["tokens"]>(
+    (state) => state.tokens
+  );  const [tema, setTema] = useState<Tema>();
 
   useEffect(() => {
     if (token == "") {
-      alert("Você precisa estar logado");
+      toast.error("Você precisa estar logado", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "colored",
+        progress: undefined,
+      });
       navigate("/login");
     }
   }, [token]);
@@ -40,7 +53,17 @@ function DeletarTema() {
         'Authorization': token
       }
     });
-    alert('Tema deletado com sucesso');
+    toast.error("Tema deletado com sucesso", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      theme: "colored",
+      progress: undefined,
+    });
+    
   }
 
   function nao() {

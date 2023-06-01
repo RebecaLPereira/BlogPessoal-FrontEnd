@@ -4,12 +4,15 @@ import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Link, useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import UserLogin from "../../models/UserLogin";
-import useLocalStorage from "react-use-localstorage";
 import { login } from "../../service/Service";
+import { useDispatch } from "react-redux";
+import { addToken } from "../../store/tokens/actions";
+import { toast } from "react-toastify";
 
 function Login() {
-  let history = useNavigate();
-  const [token, setToken] = useLocalStorage("token");
+  let navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [token, setToken] = useState("");
   const [userLogin, setUserLogin] = useState<UserLogin>({
     id: 0,
     usuario: "",
@@ -26,7 +29,8 @@ function Login() {
 
   useEffect(() => {
     if (token != "") {
-      history("/home");
+      dispatch(addToken(token));
+      navigate("/home");
     }
   }, [token]);
 
@@ -35,9 +39,27 @@ function Login() {
     try {
       await login("/usuarios/logar", userLogin, setToken);
 
-      alert("Usuário logado com sucesso!");
+      toast.success("Usuário logado com sucesso!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "colored",
+        progress: undefined,
+      });
     } catch (error) {
-      alert("Dados do usuário inconsistentes. Error ao logar!");
+      toast.error("Dados do usuário inconsistentes. Error ao logar!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "colored",
+        progress: undefined,
+      });
     }
   }
 
